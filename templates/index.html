@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Roblox Friends Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card h2 {
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 52, 96, 0.5);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 8px;
+            color: #eee;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #0f3460 0%, #00d9ff 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #7b0000 0%, #e53935 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(229, 57, 53, 0.5);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #7a4800 0%, #ffa000 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 160, 0, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(15, 52, 96, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d9ff;
+            transform: translateY(-3px);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00d9ff;
+        }
+
+        .log-container {
+            background: rgba(15, 52, 96, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            animation: slideIn 0.3s ease;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-info { color: #00d9ff; }
+        .log-success { color: #00ff88; }
+        .log-error { color: #ff6b6b; }
+        .log-warning { color: #ffd93d; }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(15, 52, 96, 0.4);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff 0%, #e94560 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Разделитель секций кнопок */
+        .actions-section {
+            margin-bottom: 15px;
+        }
+
+        .actions-section-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.2);
+            border-left: 4px solid #00ff88;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 107, 0.2);
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .processing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .log-container::-webkit-scrollbar { width: 8px; }
+        .log-container::-webkit-scrollbar-track { background: rgba(15, 52, 96, 0.2); border-radius: 10px; }
+        .log-container::-webkit-scrollbar-thumb { background: #00d9ff; border-radius: 10px; }
+        .log-container::-webkit-scrollbar-thumb:hover { background: #e94560; }
+
+        #visitorBroadcastToast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(120%);
+            max-width: min(92vw, 480px);
+            padding: 16px 22px;
+            background: rgba(22, 33, 62, 0.96);
+            border: 2px solid #00d9ff;
+            border-radius: 14px;
+            color: #eee;
+            font-size: 1rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+
+        #visitorBroadcastToast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 ROBLOX FRIENDS TOOL</h1>
+            <p>Fast Friend Request Manager</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Authentication Card -->
+        <div class="card" id="authCard">
+            <h2>🔑 Authentication</h2>
+            <div class="input-group">
+                <label for="apiKeyInput">🔐 API Key:</label>
+                <input type="text" id="apiKeyInput" placeholder="Enter your API key (get from admin)">
+            </div>
+            <div class="input-group">
+                <label for="cookieInput">.ROBLOSECURITY Cookie:</label>
+                <input type="text" id="cookieInput" placeholder="Enter your .ROBLOSECURITY cookie">
+            </div>
+            <div class="input-group">
+                <label for="trackerInput">RBXBrowserTrackerID (optional):</label>
+                <input type="text" id="trackerInput" placeholder="Optional browser tracker ID">
+            </div>
+            <button class="btn btn-primary" id="connectBtn" onclick="connect()">
+                🔗 CONNECT
+            </button>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="card hidden" id="statsCard">
+            <h2>📊 Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">📊 Status</div>
+                    <div class="stat-value" id="statusValue">Connected</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">📨 Total</div>
+                    <div class="stat-value" id="requestsValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">✅ Done</div>
+                    <div class="stat-value" id="acceptedValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⏭️ Skipped</div>
+                    <div class="stat-value" id="skippedValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⚡ Speed</div>
+                    <div class="stat-value" id="rpsValue">0 req/s</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+
+            <!-- JSON actions -->
+            <div class="actions-section">
+                <div class="actions-section-label">📁 JSON управление</div>
+                <div class="actions">
+                    <button class="btn btn-secondary" onclick="saveJson()">
+                        💾 Save IDs to JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="addToJson()" style="background: linear-gradient(135deg, #00ff88 0%, #00aa5a 100%);">
+                        ➕ Add New IDs to JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Friend request actions -->
+            <div class="actions-section">
+                <div class="actions-section-label">📨 Управление заявками</div>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="acceptAll()">
+                        ✨ Accept All Requests
+                    </button>
+                    <button class="btn btn-warning" onclick="declineAll()">
+                        🚫 Decline All Requests
+                    </button>
+                </div>
+            </div>
+
+            <!-- Friends actions -->
+            <div class="actions-section">
+                <div class="actions-section-label">👥 Управление друзьями</div>
+                <div class="actions">
+                    <button class="btn btn-danger" onclick="unfriendAll()">
+                        💔 Unfriend All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="card hidden" id="logsCard">
+            <h2>📝 Activity Log</h2>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry log-info">
+                    <span class="log-time">[--:--:--]</span>
+                    <span>ℹ️  Waiting for connection...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with ❤️ | Use responsibly
+        </div>
+    </div>
+
+    <div id="visitorBroadcastToast" role="status" aria-live="polite"></div>
+
+    <script>
+        let sessionId = null;
+        let statusInterval = null;
+        let apiKey = null;
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `<span class="log-time">[${time}]</span><span>${icons[type]}  ${message}</span>`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function setButtonsDisabled(disabled) {
+            document.querySelectorAll('#statsCard .btn').forEach(btn => {
+                btn.disabled = disabled;
+            });
+        }
+
+        async function connect() {
+            apiKey = document.getElementById('apiKeyInput').value.trim();
+            const cookie = document.getElementById('cookieInput').value.trim();
+            const tracker = document.getElementById('trackerInput').value.trim();
+
+            if (!apiKey) { showAlert('Please enter API key!', 'error'); return; }
+            if (!cookie) { showAlert('Please enter .ROBLOSECURITY cookie!', 'error'); return; }
+
+            const btn = document.getElementById('connectBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Connecting...';
+            addLog('Connecting to Roblox...', 'info');
+
+            try {
+                const response = await fetch('/api/connect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ cookie, tracker, api_key: apiKey })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    sessionId = data.session_id;
+                    addLog('Successfully connected!', 'success');
+                    showAlert(data.message, 'success');
+                    document.getElementById('statsCard').classList.remove('hidden');
+                    document.getElementById('logsCard').classList.remove('hidden');
+                    document.getElementById('authCard').style.display = 'none';
+                } else {
+                    addLog(`Connection failed: ${data.error}`, 'error');
+                    showAlert(data.error, 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🔗 CONNECT';
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Connection failed!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🔗 CONNECT';
+            }
+        }
+
+        async function saveJson() {
+            if (!sessionId || !apiKey) return;
+            addLog('Fetching friend requests...', 'info');
+            try {
+                const response = await fetch('/api/save-json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+                const data = await response.json();
+                if (data.success) { addLog(data.message, 'success'); showAlert(data.message, 'success'); }
+                else { addLog(`Error: ${data.error}`, 'error'); showAlert(data.error, 'error'); }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to save IDs!', 'error');
+            }
+        }
+
+        async function addToJson() {
+            if (!sessionId || !apiKey) return;
+            addLog('Adding new IDs to existing list...', 'info');
+            try {
+                const response = await fetch('/api/add-to-json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+                const data = await response.json();
+                if (data.success) { addLog(data.message, 'success'); showAlert(`✅ ${data.message}`, 'success'); }
+                else { addLog(`Error: ${data.error}`, 'error'); showAlert(data.error, 'error'); }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to add IDs!', 'error');
+            }
+        }
+
+        async function acceptAll() {
+            if (!sessionId || !apiKey) return;
+            if (!confirm('Accept all friend requests (except those in JSON)?')) return;
+
+            addLog('Starting bulk accept...', 'info');
+            resetStats();
+            setButtonsDisabled(true);
+
+            try {
+                const response = await fetch('/api/accept-all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+                const data = await response.json();
+                if (data.success) { addLog(data.message, 'success'); startStatusPolling('accept'); }
+                else { addLog(`Error: ${data.error}`, 'error'); showAlert(data.error, 'error'); setButtonsDisabled(false); }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to start processing!', 'error');
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function declineAll() {
+            if (!sessionId || !apiKey) return;
+            if (!confirm('⚠️ Decline ALL incoming friend requests? This cannot be undone!')) return;
+
+            addLog('Starting decline all requests...', 'warning');
+            resetStats();
+            setButtonsDisabled(true);
+
+            try {
+                const response = await fetch('/api/decline-all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+                const data = await response.json();
+                if (data.success) { addLog('Declining all requests...', 'warning'); startStatusPolling('decline'); }
+                else { addLog(`Error: ${data.error}`, 'error'); showAlert(data.error, 'error'); setButtonsDisabled(false); }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to start declining!', 'error');
+                setButtonsDisabled(false);
+            }
+        }
+
+        async function unfriendAll() {
+            if (!sessionId || !apiKey) return;
+            if (!confirm('💔 UNFRIEND ALL? This will remove ALL your friends permanently!')) return;
+            if (!confirm('Are you absolutely sure? This action CANNOT be undone!')) return;
+
+            addLog('Starting unfriend all...', 'warning');
+            resetStats();
+            setButtonsDisabled(true);
+
+            try {
+                const response = await fetch('/api/unfriend-all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                    body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                });
+                const data = await response.json();
+                if (data.success) { addLog('Unfriending all users...', 'warning'); startStatusPolling('unfriend'); }
+                else { addLog(`Error: ${data.error}`, 'error'); showAlert(data.error, 'error'); setButtonsDisabled(false); }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, 'error');
+                showAlert('Failed to start unfriend!', 'error');
+                setButtonsDisabled(false);
+            }
+        }
+
+        function resetStats() {
+            document.getElementById('acceptedValue').textContent = '0';
+            document.getElementById('skippedValue').textContent = '0';
+            document.getElementById('rpsValue').textContent = '0 req/s';
+            document.getElementById('requestsValue').textContent = '0';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressBar').textContent = '0%';
+        }
+
+        function getActionLabels(action) {
+            const labels = {
+                accept:   { done: 'Accepted', stat: '✅ Accepted' },
+                decline:  { done: 'Declined', stat: '🚫 Declined' },
+                unfriend: { done: 'Unfriended', stat: '💔 Removed' },
+            };
+            return labels[action] || labels.accept;
+        }
+
+        function startStatusPolling(action = 'accept') {
+            if (statusInterval) clearInterval(statusInterval);
+            const labels = getActionLabels(action);
+
+            statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+                        body: JSON.stringify({ session_id: sessionId, api_key: apiKey })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.getElementById('acceptedValue').textContent = data.accepted || 0;
+                        document.getElementById('skippedValue').textContent = data.skipped || 0;
+                        document.getElementById('rpsValue').textContent = `${(data.rps || 0).toFixed(1)} req/s`;
+
+                        if (data.total > 0) {
+                            const progress = ((data.accepted + data.skipped) / data.total * 100).toFixed(0);
+                            document.getElementById('progressBar').style.width = `${progress}%`;
+                            document.getElementById('progressBar').textContent = `${progress}%`;
+                            document.getElementById('requestsValue').textContent = data.total;
+                        }
+
+                        if (data.logs && data.logs.length > 0) {
+                            data.logs.forEach(log => {
+                                if (!document.getElementById('logContainer').textContent.includes(log)) {
+                                    addLog(log, 'info');
+                                }
+                            });
+                        }
+
+                        if (!data.running) {
+                            clearInterval(statusInterval);
+                            statusInterval = null;
+                            setButtonsDisabled(false);
+                            showAlert(`✅ ${labels.done} ${data.accepted || 0} users!`, 'success');
+                            addLog(`Finished: ${labels.done} ${data.accepted || 0}`, 'success');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Status poll error:', error);
+                }
+            }, 500);
+        }
+
+        // --- Admin → visitors: sound / vibrate / toast (polling) ---
+        let lastBroadcastEpoch = null;
+
+        function getVisitorAudioContext() {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return null;
+            const ctx = new AC();
+            return ctx;
+        }
+
+        let visitorAC = null;
+        function resumeVisitorAudio() {
+            try {
+                if (!visitorAC) visitorAC = getVisitorAudioContext();
+                if (visitorAC && visitorAC.state === 'suspended') visitorAC.resume();
+            } catch (e) { /* ignore */ }
+        }
+
+        document.body.addEventListener('click', onVisitorUserGesture, { capture: true });
+        document.body.addEventListener('touchstart', onVisitorUserGesture, { capture: true, passive: true });
+        document.body.addEventListener('keydown', onVisitorUserGesture, { capture: true });
+
+        let visitorStreamAudio = null;
+        let pendingBroadcastMediaUrl = null;
+
+        function onVisitorUserGesture() {
+            resumeVisitorAudio();
+            if (pendingBroadcastMediaUrl) {
+                const u = pendingBroadcastMediaUrl;
+                pendingBroadcastMediaUrl = null;
+                playVisitorMedia(u, true);
+            }
+        }
+
+        function visitorTone(freq, dur, type = 'sine', vol = 0.12, when = 0) {
+            if (!visitorAC) visitorAC = getVisitorAudioContext();
+            if (!visitorAC) return;
+            const t0 = visitorAC.currentTime + when;
+            const o = visitorAC.createOscillator();
+            const g = visitorAC.createGain();
+            o.type = type;
+            o.frequency.setValueAtTime(freq, t0);
+            g.gain.setValueAtTime(0, t0);
+            g.gain.linearRampToValueAtTime(vol, t0 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+            o.connect(g);
+            g.connect(visitorAC.destination);
+            o.start(t0);
+            o.stop(t0 + dur + 0.05);
+        }
+
+        function playVisitorSound(id) {
+            if (!id) return;
+            resumeVisitorAudio();
+            const seq = (freq, dur, w = 0, ty = 'sine') => visitorTone(freq, dur, ty, 0.11, w);
+            switch (id) {
+                case 'beep':
+                    seq(880, 0.12, 0);
+                    break;
+                case 'alert':
+                    seq(520, 0.15, 0, 'square');
+                    seq(780, 0.15, 0.18, 'square');
+                    break;
+                case 'chime':
+                    seq(523, 0.2, 0);
+                    seq(659, 0.2, 0.22);
+                    seq(784, 0.28, 0.44);
+                    break;
+                case 'ding':
+                    seq(1200, 0.08, 0);
+                    seq(1600, 0.12, 0.1);
+                    break;
+                case 'fanfare':
+                    [523, 659, 784, 1046].forEach((f, i) => seq(f, 0.18, i * 0.2));
+                    break;
+                case 'error':
+                    seq(150, 0.35, 0, 'sawtooth');
+                    seq(130, 0.4, 0.38, 'sawtooth');
+                    break;
+                case 'siren':
+                    for (let i = 0; i < 8; i++) {
+                        seq(i % 2 === 0 ? 880 : 620, 0.12, i * 0.13, 'triangle');
+                    }
+                    break;
+                case 'mario':
+                    seq(659, 0.1, 0);
+                    seq(659, 0.1, 0.12);
+                    seq(659, 0.1, 0.3);
+                    seq(523, 0.1, 0.42);
+                    seq(659, 0.1, 0.54);
+                    seq(784, 0.12, 0.66);
+                    seq(392, 0.15, 0.9, 'square');
+                    break;
+                case 'windows':
+                    seq(1046, 0.08, 0);
+                    seq(784, 0.1, 0.1);
+                    seq(659, 0.1, 0.22);
+                    seq(880, 0.12, 0.34);
+                    seq(1046, 0.15, 0.48);
+                    break;
+                case 'doorbell':
+                    seq(740, 0.2, 0);
+                    seq(988, 0.25, 0.22);
+                    break;
+                case 'vibrate':
+                    if (navigator.vibrate) navigator.vibrate([180, 80, 180, 80, 220]);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function showVisitorToast(text) {
+            const el = document.getElementById('visitorBroadcastToast');
+            if (!el || !text) return;
+            el.textContent = text;
+            el.classList.add('visible');
+            clearTimeout(showVisitorToast._tm);
+            showVisitorToast._tm = setTimeout(() => el.classList.remove('visible'), 9000);
+        }
+
+        function isVisitorRedirectOk(u) {
+            try {
+                const x = new URL(u);
+                return x.protocol === 'http:' || x.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function scheduleVisitorRedirect(url, delayMs) {
+            if (!url || !isVisitorRedirectOk(url)) return;
+            const ms = Math.max(0, Math.min(120000, Number(delayMs) || 0));
+            setTimeout(() => {
+                try {
+                    window.location.assign(url);
+                } catch (e) {}
+            }, ms);
+        }
+
+        function playVisitorMedia(url, afterUnlock) {
+            if (!url) return;
+            resumeVisitorAudio();
+            pendingBroadcastMediaUrl = null;
+            const lower = url.toLowerCase();
+            const isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm');
+            const blockedHint = () => {
+                pendingBroadcastMediaUrl = url;
+                showVisitorToast(
+                    'Click or tap anywhere on this page to play sound — the browser blocks autoplay until you interact.'
+                );
+            };
+            if (isVideo) {
+                try {
+                    document.querySelectorAll('video[data-broadcast-player]').forEach((n) => n.remove());
+                } catch (e) {}
+                const v = document.createElement('video');
+                v.dataset.broadcastPlayer = '1';
+                v.src = url;
+                v.playsInline = true;
+                v.setAttribute('playsinline', '');
+                v.setAttribute('webkit-playsinline', 'true');
+                v.muted = false;
+                v.volume = 1;
+                v.style.cssText =
+                    'position:fixed;width:2px;height:2px;opacity:0.02;pointer-events:none;left:0;top:0;z-index:1';
+                document.body.appendChild(v);
+                const cleanup = () => {
+                    try {
+                        v.remove();
+                    } catch (e) {}
+                };
+                v.addEventListener('ended', cleanup);
+                setTimeout(cleanup, 600000);
+                v.play()
+                    .then(() => {})
+                    .catch((err) => {
+                        console.debug('Visitor broadcast video play:', err);
+                        cleanup();
+                        if (!afterUnlock) blockedHint();
+                    });
+            } else {
+                if (!visitorStreamAudio) visitorStreamAudio = new Audio();
+                visitorStreamAudio.volume = 1;
+                visitorStreamAudio.preload = 'auto';
+                visitorStreamAudio.src = url;
+                visitorStreamAudio.load();
+                visitorStreamAudio
+                    .play()
+                    .then(() => {})
+                    .catch((err) => {
+                        console.debug('Visitor broadcast audio play:', err);
+                        if (!afterUnlock) blockedHint();
+                    });
+            }
+        }
+
+        function tryClaimBroadcastEpoch(ep) {
+            if (!ep) return false;
+            try {
+                const key = 'vf_bc_' + ep;
+                if (sessionStorage.getItem(key)) return false;
+                sessionStorage.setItem(key, '1');
+                return true;
+            } catch (e) {
+                if (applyBroadcastEffects._mem && applyBroadcastEffects._mem.has(ep)) return false;
+                if (!applyBroadcastEffects._mem) applyBroadcastEffects._mem = new Set();
+                applyBroadcastEffects._mem.add(ep);
+                return true;
+            }
+        }
+
+        function applyBroadcastEffects(ep, data) {
+            if (!tryClaimBroadcastEpoch(ep)) return;
+            if (data.toast) showVisitorToast(data.toast);
+            if (data.media_url) playVisitorMedia(data.media_url);
+            else if (data.sound) playVisitorSound(data.sound);
+            if (data.redirect_url) scheduleVisitorRedirect(data.redirect_url, data.redirect_delay_ms);
+        }
+
+        async function pollVisitorBroadcast() {
+            try {
+                const response = await fetch('/api/broadcast', { cache: 'no-store' });
+                const data = await response.json();
+                if (!data.success) return;
+                const ep = data.epoch | 0;
+                if (lastBroadcastEpoch === null) {
+                    lastBroadcastEpoch = ep;
+                    applyBroadcastEffects(ep, data);
+                    return;
+                }
+                if (ep <= lastBroadcastEpoch) return;
+                lastBroadcastEpoch = ep;
+                applyBroadcastEffects(ep, data);
+            } catch (e) {
+                /* offline */
+            }
+        }
+
+        setInterval(pollVisitorBroadcast, 1600);
+        setTimeout(pollVisitorBroadcast, 600);
+    </script>
+</body>
+</html>
