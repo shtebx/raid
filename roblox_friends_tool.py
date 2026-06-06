@@ -2,6 +2,7 @@ import requests
 import json
 import uuid
 import sys
+import time
 import concurrent.futures
 
 sys.stdout.reconfigure(encoding="utf-8") if hasattr(sys.stdout, "reconfigure") else None
@@ -34,8 +35,32 @@ class RobloxFriendsTool:
         self.csrf_token = token
 
     # --------------------------------------------------
+    def _post_with_retry(self, url, max_retries=5):
+        """POST запрос с автоматическим retry при 429 и обновлением CSRF при 403"""
+        for attempt in range(max_retries):
+            r = self.session.post(
+                url,
+                headers={"x-csrf-token": self.csrf_token},
+                timeout=10,
+            )
+            if r.status_code == 200:
+                return True
+            elif r.status_code == 403:
+                new_token = r.headers.get("x-csrf-token")
+                if new_token:
+                    self.csrf_token = new_token
+                # retry immediately
+            elif r.status_code == 429:
+                wait = int(r.headers.get("Retry-After", 10))
+                print(f"[RATE LIMIT] 429 — waiting {wait}s... (attempt {attempt+1}/{max_retries})")
+                time.sleep(wait)
+            else:
+                print(f"[WARN] Unexpected status {r.status_code} for {url}")
+                return False
+        return False
+
+    # --------------------------------------------------
     def get_user_id(self):
-        """Получить свой user ID"""
         r = self.session.get(
             "https://users.roblox.com/v1/users/authenticated",
             timeout=10,
@@ -46,7 +71,6 @@ class RobloxFriendsTool:
 
     # --------------------------------------------------
     def get_friend_requests(self):
-        """Возвращает список всех friend requests ID"""
         print("[...] Loading friend requests...")
         all_ids = []
         cursor = None
@@ -58,7 +82,6 @@ class RobloxFriendsTool:
                 headers={"x-csrf-token": self.csrf_token},
                 timeout=10,
             )
-
             if r.status_code != 200:
                 raise RuntimeError(f"HTTP {r.status_code}")
 
@@ -75,23 +98,17 @@ class RobloxFriendsTool:
 
     # --------------------------------------------------
     def get_friends_list(self):
-        """Возвращает список всех друзей (ID)"""
         print("[...] Loading friends list...")
         user_id = self.get_user_id()
 
-        all_ids = []
         r = self.session.get(
             f"https://friends.roblox.com/v1/users/{user_id}/friends",
             timeout=10,
         )
-
         if r.status_code != 200:
             raise RuntimeError(f"HTTP {r.status_code}")
 
-        data = r.json()
-        for u in data.get("data", []):
-            all_ids.append(u["id"])
-
+        all_ids = [u["id"] for u in r.json().get("data", [])]
         print(f"[OK] Found {len(all_ids)} friends")
         return all_ids
 
@@ -104,85 +121,36 @@ class RobloxFriendsTool:
 
     # --------------------------------------------------
     def accept_request(self, user_id: int) -> bool:
-        """Принимает одну заявку"""
         try:
-            r = self.session.post(
-                f"https://friends.roblox.com/v1/users/{user_id}/accept-friend-request",
-                headers={"x-csrf-token": self.csrf_token},
-                timeout=10,
+            return self._post_with_retry(
+                f"https://friends.roblox.com/v1/users/{user_id}/accept-friend-request"
             )
-            if r.status_code == 200:
-                return True
-
-            if r.status_code == 403:
-                new_token = r.headers.get("x-csrf-token")
-                if new_token:
-                    self.csrf_token = new_token
-                    r = self.session.post(
-                        f"https://friends.roblox.com/v1/users/{user_id}/accept-friend-request",
-                        headers={"x-csrf-token": self.csrf_token},
-                        timeout=10,
-                    )
-                    return r.status_code == 200
-        except Exception:
+        except Exception as e:
+            print(f"[ERR] accept {user_id}: {e}")
             return False
-        return False
 
     # --------------------------------------------------
     def decline_request(self, user_id: int) -> bool:
-        """Отклоняет одну заявку в друзья"""
         try:
-            r = self.session.post(
-                f"https://friends.roblox.com/v1/users/{user_id}/decline-friend-request",
-                headers={"x-csrf-token": self.csrf_token},
-                timeout=10,
+            return self._post_with_retry(
+                f"https://friends.roblox.com/v1/users/{user_id}/decline-friend-request"
             )
-            if r.status_code == 200:
-                return True
-
-            if r.status_code == 403:
-                new_token = r.headers.get("x-csrf-token")
-                if new_token:
-                    self.csrf_token = new_token
-                    r = self.session.post(
-                        f"https://friends.roblox.com/v1/users/{user_id}/decline-friend-request",
-                        headers={"x-csrf-token": self.csrf_token},
-                        timeout=10,
-                    )
-                    return r.status_code == 200
-        except Exception:
+        except Exception as e:
+            print(f"[ERR] decline {user_id}: {e}")
             return False
-        return False
 
     # --------------------------------------------------
     def unfriend(self, user_id: int) -> bool:
-        """Удаляет пользователя из друзей"""
         try:
-            r = self.session.post(
-                f"https://friends.roblox.com/v1/users/{user_id}/unfriend",
-                headers={"x-csrf-token": self.csrf_token},
-                timeout=10,
+            return self._post_with_retry(
+                f"https://friends.roblox.com/v1/users/{user_id}/unfriend"
             )
-            if r.status_code == 200:
-                return True
-
-            if r.status_code == 403:
-                new_token = r.headers.get("x-csrf-token")
-                if new_token:
-                    self.csrf_token = new_token
-                    r = self.session.post(
-                        f"https://friends.roblox.com/v1/users/{user_id}/unfriend",
-                        headers={"x-csrf-token": self.csrf_token},
-                        timeout=10,
-                    )
-                    return r.status_code == 200
-        except Exception:
+        except Exception as e:
+            print(f"[ERR] unfriend {user_id}: {e}")
             return False
-        return False
 
     # --------------------------------------------------
     def accept_all_except_json(self):
-        """Принимает все friend requests кроме тех, что есть в JSON"""
         try:
             with open(JSON_FILE, "r", encoding="utf-8") as f:
                 ignored = set(json.load(f).get("ids", []))
