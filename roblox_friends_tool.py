@@ -7,7 +7,7 @@ import concurrent.futures
 sys.stdout.reconfigure(encoding="utf-8") if hasattr(sys.stdout, "reconfigure") else None
 
 JSON_FILE = "requests.json"
-MAX_THREADS = 20
+MAX_THREADS = 5
 
 class RobloxFriendsTool:
     def __init__(self, roblosecurity: str, browser_tracker_id: str | None = None):
